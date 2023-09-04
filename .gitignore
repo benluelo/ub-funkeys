@@ -1,3 +1,5 @@
-/target
-/MegaByte
+target
+MegaByte/*
+!MegaByte
+!MegaByte/MegaByte.exe
 output
