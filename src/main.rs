@@ -103,13 +103,20 @@ fn main() {
 
     loop {
         let mut buf = [0; 256];
-        let timeout = Duration::from_secs(5);
+        let timeout = Duration::from_millis(endpoint.interval().into());
 
-        let bytes_read = handle.read_interrupt(0x81, &mut buf, timeout);
-
-        println!("read {bytes_read:?} bytes");
-
-        dbg!(u64::from_le_bytes(buf[0..8].try_into().unwrap()));
+        match handle.read_interrupt(endpoint.address(), &mut buf, timeout) {
+            Ok(bytes_read) => {
+                println!(
+                    "read {bytes_read:?} bytes: {}",
+                    u64::from_le_bytes(buf[0..8].try_into().unwrap())
+                );
+            }
+            Err(rusb::Error::Timeout) => {}
+            Err(err) => {
+                panic!("{err:?}")
+            }
+        }
     }
 }
 
